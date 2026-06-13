@@ -13,7 +13,7 @@ const firaSans = Fira_Sans({
   subsets: ["latin"],
 });
 
-const SITE = "https://skill-rank.vercel.app";
+const SITE = "https://skill-rank-ten.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE),
