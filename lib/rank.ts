@@ -1,9 +1,39 @@
 import type {
   RankedSkill,
   SkillCandidate,
+  SkillKind,
   SkillSignals,
   SourceKey,
 } from "./types";
+
+/**
+ * Patterns that mark a candidate as an actual *skill* (a skill, subagent,
+ * slash-command set, or skill collection) rather than a generic tool/server.
+ */
+const SKILL_PATTERNS: RegExp[] = [
+  /agent[- ]?skills?/,
+  /\bsub[- ]?agents?\b/,
+  /claude[- ]?skills?/,
+  /slash[- ]?commands?/,
+  /\.claude\b/,
+  /awesome[- ]claude/,
+  /\bskills?\b/,
+];
+
+/**
+ * Classify a candidate by what it *is*, not which source surfaced it. A GitHub
+ * repo can be a "skill"; an npm-distributed tool is a "package". Falls back to
+ * "repo" (MCP servers, general tooling).
+ */
+export function classifyKind(c: SkillCandidate): SkillKind {
+  const text = [c.name, c.description, c.tags.join(" ")].join(" ").toLowerCase();
+  if (SKILL_PATTERNS.some((re) => re.test(text))) return "skill";
+  const downloads = c.signals.weeklyDownloads ?? 0;
+  if (downloads > 0 || /npmjs\.com/.test(c.url) || c.key.startsWith("npm:")) {
+    return "package";
+  }
+  return "repo";
+}
 
 /**
  * Per-signal weights. Each signal is normalized to 0–1 (log-scaled) across the
@@ -172,7 +202,7 @@ export function rankSkills(
       owner: skill.owner,
       description: skill.description,
       url: skill.url,
-      kind: skill.kind,
+      kind: classifyKind(skill),
       tags: skill.tags.slice(0, 6),
       signals: skill.signals as SkillSignals,
       score,

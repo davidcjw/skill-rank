@@ -1,16 +1,15 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { RankedSkill, SkillKind } from "@/lib/types";
+import type { RankedSkill } from "@/lib/types";
 import { SkillRow } from "./SkillRow";
 
-type Filter = "all" | SkillKind;
+type Filter = "all" | "skill" | "tool";
 
 const FILTERS: { key: Filter; label: string }[] = [
   { key: "all", label: "All" },
   { key: "skill", label: "Skills" },
-  { key: "repo", label: "Repos" },
-  { key: "package", label: "Packages" },
+  { key: "tool", label: "Tools" },
 ];
 
 export function Leaderboard({ skills }: { skills: RankedSkill[] }) {
@@ -20,7 +19,9 @@ export function Leaderboard({ skills }: { skills: RankedSkill[] }) {
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return skills.filter((s) => {
-      if (filter !== "all" && s.kind !== filter) return false;
+      // "Skills" = skill collections/subagents; "Tools" = repos, servers, packages.
+      if (filter === "skill" && s.kind !== "skill") return false;
+      if (filter === "tool" && s.kind === "skill") return false;
       if (!q) return true;
       return (
         s.name.toLowerCase().includes(q) ||
@@ -86,8 +87,23 @@ export function Leaderboard({ skills }: { skills: RankedSkill[] }) {
       </div>
 
       {visible.length === 0 ? (
-        <div className="px-5 py-16 text-center font-mono text-sm text-muted">
-          No skills match “{query}”.
+        <div className="flex flex-col items-center gap-3 px-5 py-16 text-center font-mono text-sm text-muted">
+          <p>
+            {query.trim()
+              ? `No skills match “${query}”.`
+              : `No ${FILTERS.find((f) => f.key === filter)?.label.toLowerCase() ?? ""} in today's ranking.`}
+          </p>
+          {(query.trim() || filter !== "all") && (
+            <button
+              onClick={() => {
+                setQuery("");
+                setFilter("all");
+              }}
+              className="cursor-pointer rounded-md border border-border px-3 py-1.5 text-xs text-muted transition-colors hover:border-accent/50 hover:text-accent"
+            >
+              clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div role="list">

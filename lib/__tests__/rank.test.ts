@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mergeCandidates, rankSkills } from "../rank";
+import { classifyKind, mergeCandidates, rankSkills } from "../rank";
 import type { SkillCandidate } from "../types";
 
 function candidate(over: Partial<SkillCandidate> & { key: string }): SkillCandidate {
@@ -36,6 +36,44 @@ describe("mergeCandidates", () => {
     ]);
     expect(m.description).toBe("a much longer description");
     expect(m.tags.sort()).toEqual(["a", "b"]);
+  });
+});
+
+describe("classifyKind", () => {
+  it("classifies by content, not by source", () => {
+    // A GitHub repo that is actually a skill collection → "skill".
+    expect(
+      classifyKind(candidate({ key: "gh:anthropics/skills", name: "skills" })),
+    ).toBe("skill");
+    expect(
+      classifyKind(
+        candidate({ key: "gh:a/b", description: "subagents for Claude Code" }),
+      ),
+    ).toBe("skill");
+    // npm-distributed tool with downloads, no skill wording → "package".
+    expect(
+      classifyKind(
+        candidate({ key: "gh:c/d", name: "cc-switch", signals: { weeklyDownloads: 5000 } }),
+      ),
+    ).toBe("package");
+    // Generic MCP server repo → "repo".
+    expect(
+      classifyKind(
+        candidate({ key: "gh:e/f", name: "servers", description: "MCP servers", tags: ["mcp"] }),
+      ),
+    ).toBe("repo");
+  });
+
+  it("populates all three kinds across a realistic set", () => {
+    const ranked = rankSkills([
+      candidate({ key: "gh:anthropics/skills", name: "skills", signals: { stars: 4000 } }),
+      candidate({ key: "gh:x/server", name: "server", description: "MCP server", signals: { stars: 9000 } }),
+      candidate({ key: "gh:y/tool", name: "tool", signals: { stars: 100, weeklyDownloads: 8000 } }),
+    ]);
+    const kinds = new Set(ranked.map((r) => r.kind));
+    expect(kinds.has("skill")).toBe(true);
+    expect(kinds.has("repo")).toBe(true);
+    expect(kinds.has("package")).toBe(true);
   });
 });
 
