@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+:root {
+  /* OLED dark palette (ui-ux-pro-max: Dark Mode / code-dark + run-green) */
+  --background: #07090f;
+  --surface: #0f172a;
+  --surface-2: #131c30;
+  --foreground: #f8fafc;
+  --muted: #8a97ad;
+  --border: #1f2a40;
+  --accent: #22c55e;
+  --accent-dim: #16331f;
+  --up: #22c55e;
+  --down: #f87171;
+  --amber: #f5a524;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-dim: var(--accent-dim);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-amber: var(--amber);
+  --font-mono: var(--font-fira-code);
+  --font-sans: var(--font-fira-sans);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-fira-sans), ui-sans-serif, system-ui, sans-serif;
+  /* Layered atmosphere: green spotlight + faint dot-grid, no flat fill. */
+  background-image:
+    radial-gradient(
+      900px 500px at 78% -10%,
+      rgba(34, 197, 94, 0.1),
+      transparent 60%
+    ),
+    radial-gradient(
+      700px 600px at 5% 0%,
+      rgba(30, 58, 138, 0.18),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 1px 1px,
+      rgba(148, 163, 184, 0.05) 1px,
+      transparent 0
+    );
+  background-size: auto, auto, 22px 22px;
+  background-attachment: fixed;
+}
+
+/* Tabular figures for every number column (ui-ux-pro-max: number-tabular). */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Neon glow for the top-rank ordinals. */
+.glow-accent {
+  text-shadow: 0 0 14px rgba(34, 197, 94, 0.55);
+}
+
+/* Thin scanline veil over the hero for the "ops terminal" feel. */
+.scanlines {
+  position: relative;
+}
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+.pulse-dot {
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.row-in {
+  animation: row-in 0.4s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-dot,
+  .row-in {
+    animation: none;
+  }
+}
