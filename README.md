@@ -1,8 +1,16 @@
 # SkillRank
 
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
+![Live](https://img.shields.io/badge/demo-live-brightgreen)
+
 **A daily leaderboard of the most popular Claude Code & AI-agent skills**, scored from signals across the open web and re-ranked every 24 hours — so it's worth coming back to.
 
-🟢 `live · re-ranked every 24h`
+🟢 `live · re-ranked every 24h` — **[skill-rank-ten.vercel.app](https://skill-rank-ten.vercel.app)**
+
+<p align="center">
+  <img src="docs/screenshot.png" alt="SkillRank leaderboard — Claude & AI-agent skills ranked daily" width="720">
+</p>
 
 ## What it does
 
@@ -99,3 +107,23 @@ Without it, the board still re-ranks daily — rows just won't show ▲/▼ arro
 ## Tech
 
 Next.js 16 · React 19 · Tailwind CSS v4 · TypeScript · Vitest. Dark "ops terminal" UI (Fira Code/Sans, OLED palette, source-mix bars).
+
+## Contributing
+
+Contributions are welcome! Please open an issue first to discuss what you'd like to change.
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m 'feat: describe change'`)
+4. Push and open a pull request
+
+Please make sure `npm test` and `npm run lint` pass before submitting a PR.
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
+By participating you agree to uphold a welcoming, harassment-free environment.
+
+## License
+
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
