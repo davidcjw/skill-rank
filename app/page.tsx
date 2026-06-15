@@ -1,4 +1,5 @@
 import { Hero } from "@/components/Hero";
+import { Trending } from "@/components/Trending";
 import { Leaderboard } from "@/components/Leaderboard";
 import { getLeaderboard } from "@/lib/skills";
 
@@ -11,6 +12,7 @@ export default async function Home() {
   return (
     <main>
       <Hero board={board} />
+      <Trending skills={board.skills} />
       <Leaderboard skills={board.skills} />
       <footer className="border-t border-border">
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-5 py-8 font-mono text-xs text-muted sm:flex-row sm:items-center sm:justify-between">

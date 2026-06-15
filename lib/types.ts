@@ -16,7 +16,7 @@ export interface SkillSignals {
   weeklyDownloads: number;
   /** Hacker News points summed across recent mentions (buzz). */
   hnPoints: number;
-  /** Number of distinct community mentions (HN stories/comments). */
+  /** Distinct community mentions — HN stories + curated "awesome" list inclusions. */
   mentions: number;
 }
 

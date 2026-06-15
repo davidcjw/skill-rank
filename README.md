@@ -14,15 +14,17 @@
 
 ## What it does
 
-SkillRank discovers Claude / AI-agent skills (skills, subagents, MCP servers, and curated collections) and ranks them by a transparent **0–100 popularity score** built from three independent sources:
+SkillRank discovers Claude / AI-agent skills (skills, subagents, MCP servers, and curated collections) and ranks them by a transparent **0–100 popularity score** built from independent sources, grouped into three buckets:
 
-| Source | Signals | Weight |
+| Bucket | Sources & signals | Weight |
 | --- | --- | --- |
 | **GitHub** | stars, forks, recency (days since last push) | 0.58 |
 | **npm** | weekly downloads | 0.25 |
-| **Hacker News** | story points + comment buzz, mention count | 0.17 |
+| **Community** | Hacker News story points + comment buzz, and **curated "awesome-*" list inclusions** (each list a repo appears in is one endorsement) | 0.17 |
 
 Each signal is **log-scaled and normalized** across the field so a handful of mega-repos don't flatten everything below them. Every row shows a coloured **source-mix bar** so you can see *where* a skill's popularity comes from, plus a **▲/▼ movement badge** versus yesterday's snapshot.
+
+A **"Trending today" strip** above the board surfaces the day's biggest **Risers**, **Fallers**, and **New** entries — derived from the movement data, so it appears once there are two daily snapshots to compare.
 
 ### Keeping it on-topic
 
@@ -49,12 +51,14 @@ app/
   api/cron/refresh/route.ts daily refresh (CRON_SECRET-protected)
 components/
   Hero.tsx                 "last updated" hero, live pulse, source pills
+  Trending.tsx             "risers / fallers / new today" strip (shown once movement data exists)
   Leaderboard.tsx          client: search + kind filter
   SkillRow.tsx             rank, movement, score, source-mix bar
   TimeAgo.tsx              client-resolved relative time
 lib/
-  sources/{github,npm,hackernews}.ts   one resilient fetcher per source
+  sources/{github,npm,hackernews,awesomeLists}.ts   one resilient fetcher per source
   rank.ts                  pure scoring/merge engine (unit-tested)
+  trending.ts              pure risers/fallers/new selector (unit-tested)
   skills.ts                orchestrator: gather → merge → rank → movement
   snapshot.ts              optional Supabase REST snapshots for movement
   seed.ts                  curated offline fallback

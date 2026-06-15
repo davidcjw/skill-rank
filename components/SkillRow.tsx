@@ -10,7 +10,7 @@ const KIND_LABEL: Record<RankedSkill["kind"], string> = {
 const SOURCE_META: Record<SourceKey, { label: string; className: string }> = {
   github: { label: "GitHub", className: "bg-accent" },
   npm: { label: "npm", className: "bg-sky-400" },
-  community: { label: "HN", className: "bg-amber" },
+  community: { label: "Community", className: "bg-amber" },
 };
 
 function DeltaBadge({ delta, isNew }: { delta: number | null; isNew: boolean }) {
@@ -107,6 +107,9 @@ export function SkillRow({ skill, index }: { skill: RankedSkill; index: number }
           )}
           {skill.signals.hnPoints > 0 && (
             <span className="tnum">▲HN {compact(skill.signals.hnPoints)}</span>
+          )}
+          {skill.signals.mentions > 0 && (
+            <span className="tnum">✦ {compact(skill.signals.mentions)} mentions</span>
           )}
         </div>
       </div>

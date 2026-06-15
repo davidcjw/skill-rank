@@ -1,6 +1,7 @@
 import { fetchGithubCandidates } from "./sources/github";
 import { fetchHackerNewsCandidates } from "./sources/hackernews";
 import { fetchNpmCandidates } from "./sources/npm";
+import { fetchAwesomeListCandidates } from "./sources/awesomeLists";
 import { rankSkills } from "./rank";
 import { isRelevantSkill } from "./relevance";
 import { SEED_CANDIDATES } from "./seed";
@@ -18,20 +19,21 @@ const MIN_LIVE_CANDIDATES = 8;
  * and a total wipeout falls back to the curated seed so the page still renders.
  */
 export async function getLeaderboard(): Promise<Leaderboard> {
-  const [github, npm, hn, previousRanks] = await Promise.all([
+  const [github, npm, hn, awesome, previousRanks] = await Promise.all([
     fetchGithubCandidates(),
     fetchNpmCandidates(),
     fetchHackerNewsCandidates(),
+    fetchAwesomeListCandidates(),
     getPreviousRanks(),
   ]);
 
   const liveSources: SourceKey[] = [];
   if (github.length) liveSources.push("github");
   if (npm.length) liveSources.push("npm");
-  if (hn.length) liveSources.push("community");
+  if (hn.length || awesome.length) liveSources.push("community");
 
   // Gate out general-purpose AI tooling that broad searches drag in.
-  let candidates: SkillCandidate[] = [...github, ...npm, ...hn].filter(
+  let candidates: SkillCandidate[] = [...github, ...npm, ...hn, ...awesome].filter(
     isRelevantSkill,
   );
   let usedFallback = false;

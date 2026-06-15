@@ -26,7 +26,7 @@ describe("mergeCandidates", () => {
     const ab = merged.find((m) => m.key === "gh:a/b")!;
     expect(ab.signals.stars).toBe(250); // max, not sum
     expect(ab.signals.hnPoints).toBe(40); // summed buzz
-    expect(ab.signals.mentions).toBe(3);
+    expect(ab.signals.mentions).toBe(3); // summed across sources
   });
 
   it("keeps the richer description and unions tags", () => {
