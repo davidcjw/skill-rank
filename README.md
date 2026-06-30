@@ -1,5 +1,7 @@
 # SkillRank
 
+[![CI](https://github.com/davidcjw/skill-rank/actions/workflows/ci.yml/badge.svg)](https://github.com/davidcjw/skill-rank/actions/workflows/ci.yml)
+
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![Live](https://img.shields.io/badge/demo-live-brightgreen)
