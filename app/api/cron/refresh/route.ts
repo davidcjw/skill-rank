@@ -1,3 +1,4 @@
+import { timingSafeEqual } from "node:crypto";
 import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import { getLeaderboard } from "@/lib/skills";
@@ -5,18 +6,30 @@ import { saveSnapshot } from "@/lib/snapshot";
 
 export const dynamic = "force-dynamic";
 
+/** Constant-time string comparison to avoid leaking the secret via timing. */
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
+
 /**
  * Daily refresh, invoked by Vercel Cron (see vercel.json). Drops the cached
  * source responses, recomputes the ranking, and stores a snapshot so tomorrow's
- * board can show movement. Protected by CRON_SECRET when set.
+ * board can show movement. Requires CRON_SECRET: the endpoint fails closed and
+ * returns 401 when the secret is unset or the request does not present it.
  */
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization");
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
+  // Fail closed: without a configured secret, refuse all requests so the
+  // expensive refetch/snapshot cannot be triggered by anonymous callers.
+  if (!secret) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+  const auth = request.headers.get("authorization");
+  if (!auth || !safeEqual(auth, `Bearer ${secret}`)) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   // Invalidate cached source fetches so the recompute pulls fresh data.
